@@ -1,29 +1,61 @@
-class ReactiveEffect {
-    private _fn: Function
+import { extend } from "../shared"
 
-    constructor(fn: Function, public scheduler?) {
+class ReactiveEffect {
+    public scheduler: Function | undefined
+    private _fn: Function
+    deps:any = [] 
+    active = true
+    onStop?: Function | undefined
+
+    constructor(fn: Function, scheduler?: Function) {
        this._fn = fn
+       this.scheduler = scheduler
     }
     run() {
         activeEffect = this
         return this._fn()
     }
+    stop() {
+        if(this.active) {
+            cleanupEffect(this)
+            if ( this.onStop) {
+                this.onStop()
+            }
+            this.active = false
+        }
+    }
 }
 
+function cleanupEffect (effect) {
+    // 
+    effect.deps.forEach(dep => {
+        dep.delete(effect)
+    });
+} 
+
 export function effect(fn: Function, options:any = {}) {
+    // fn
     const _effect = new ReactiveEffect(fn, options.scheduler)
+
+    // options
+    _effect.onStop = options.onStop
+    extend(_effect, options)
+
     _effect.run()
-    const runner = _effect.run.bind(_effect)
+    // runner
+    const runner:any = _effect.run.bind(_effect)
+    runner.effect = _effect
     return runner
 }
 
+export function stop(runner) {
+    runner.effect.stop()
+}
+
 const targetMap = new Map()
-let activeEffect: ReactiveEffect
+let activeEffect: ReactiveEffect | undefined
 
 export function track(target, key) {
-    if(!activeEffect) {
-        return
-    }
     //  将对象的依赖数组取出
     let depsMap = targetMap.get(target)
     if(!depsMap) {
@@ -36,8 +68,10 @@ export function track(target, key) {
         dep = new Set()
         depsMap.set(key, dep) // [ { user: count }: [ count: [] ] ]
     }
+    if(!activeEffect) return
     dep.add(activeEffect) // [ { user: count }: [ count: [ ReactiveEffect, ReactiveEffect, ...] ] ]
-    activeEffect = undefined as any
+    activeEffect.deps.push(dep)
+    activeEffect = undefined
 }
 
 export function trigger(target, key) {
