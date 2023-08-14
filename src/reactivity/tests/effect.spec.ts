@@ -38,4 +38,26 @@ describe('effect', () => {
         expect(result).toBe('foo')
         
     })
+
+    it('scheduler', () => {
+        // 为 effect 添加 options参数 { scheduler }，除第一次初始化照常执行 fn 外，之后都调用此 scheduler
+        const obj:any = reactive({ foo: 1 })
+        let dummy
+        let run
+        let scheduler = jest.fn(()=> {
+            run = runner
+        })
+        const runner = effect(()=> {
+            dummy = obj.foo
+            },
+            { scheduler }
+        )
+        expect(scheduler).not.toHaveBeenCalled()
+        expect(dummy).toBe(1)
+        obj.foo++
+        expect(dummy).toBe(1)
+        expect(scheduler).toHaveBeenCalledTimes(1)
+        run()
+        expect(dummy).toBe(2)
+    })
 })
