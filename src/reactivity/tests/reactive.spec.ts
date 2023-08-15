@@ -1,5 +1,5 @@
 import { effect } from '../effect'
-import { reactive, readonly, isReadonly, isReactive } from '../reactive'
+import { reactive, readonly, isReadonly, isReactive, isProxy } from '../reactive'
 
 
 describe('reactive', () => {
@@ -35,5 +35,12 @@ describe('reactive', () => {
         expect(isReactive(origin)).toBe(true)
         expect(isReactive(origin.nested)).toBe(true)
         expect(isReactive(origin.array)).toBe(true)
+    })
+
+    it('is proxy object', () => {
+        const origin :any = { age: 1 }
+        const user :any = reactive(origin)
+        expect(isProxy(origin)).toBe(false)
+        expect(isProxy(user)).toBe(true)
     })
 })
