@@ -81,9 +81,7 @@ describe('effect', () => {
 
     it('onStop',() => {
         const obj:any = reactive({ count: 1 })
-        const onStop = jest.fn(()=> {
-            console.log('onStop')
-        })
+        const onStop = jest.fn()
         let dummy
         const runner = effect(() => {
             dummy = obj.count
