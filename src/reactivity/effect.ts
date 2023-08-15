@@ -92,7 +92,6 @@ export function effect(fn: Function, options:any = {}) {
     const _effect = new ReactiveEffect(fn, options.scheduler)
 
     // options
-    _effect.onStop = options.onStop
     extend(_effect, options)
 
     _effect.run()

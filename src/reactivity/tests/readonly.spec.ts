@@ -1,4 +1,4 @@
-import { readonly } from '../reactive'
+import { isReadonly, readonly } from '../reactive'
 
 
 describe('readonly', () => {
@@ -17,5 +17,17 @@ describe('readonly', () => {
         user.age++
         // not set
         expect(console.warn).toHaveBeenCalled()
+    })
+
+    it('nested readonly', () => {
+        const origin = readonly({
+            nested: {
+                foo: 1
+            },
+            array: [{ bar: 2 }]
+        })
+        expect(isReadonly(origin)).toBe(true)
+        expect(isReadonly(origin.nested)).toBe(true)
+        expect(isReadonly(origin.array)).toBe(true)
     })
 })
