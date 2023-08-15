@@ -1,3 +1,4 @@
+import { effect } from '../effect'
 import { reactive, readonly, isReadonly, isReactive } from '../reactive'
 
 
@@ -21,5 +22,18 @@ describe('reactive', () => {
         const user :any = reactive(origin)
         expect(isReactive(origin)).toBe(false)
         expect(isReactive(user)).toBe(true)
+    })
+
+    it('nested reactive', () => {
+        const origin = reactive({
+            count:1,
+            nested: {
+                foo: 1
+            },
+            array: [{ bar: 2 }]
+        })
+        expect(isReactive(origin)).toBe(true)
+        expect(isReactive(origin.nested)).toBe(true)
+        expect(isReactive(origin.array)).toBe(true)
     })
 })
