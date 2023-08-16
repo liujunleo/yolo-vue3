@@ -7,7 +7,7 @@ let shouldTrack
 class ReactiveEffect {
     public scheduler?: Function
     private _fn: Function
-    deps:any = [] 
+    deps:any = []
     active = true
     onStop?: Function
 
@@ -58,26 +58,34 @@ export function track(target, key) {
         depsMap = new Map()
         targetMap.set(target, depsMap) // [ { user: count }: [] ]
     }
+
     // 将 key 的依赖取数
     let dep = depsMap.get(key)
     if (!dep) {
         dep = new Set()
         depsMap.set(key, dep) // [ { user: count }: [ count: [] ] ]
     }
+    trackEffects(dep)
+}
 
+export function trackEffects(dep) {
     if(dep.has(activeEffect)) return
 
     dep.add(activeEffect) // [ { user: count }: [ count: [ ReactiveEffect, ReactiveEffect, ...] ] ]
     activeEffect.deps.push(dep)
 }
 
-function isTracking() {
+export function isTracking() {
    return shouldTrack && activeEffect !== undefined
 }
 
 export function trigger(target, key) {
     const depsMap = targetMap.get(target)
     const dep = depsMap.get(key)
+    triggerEffects(dep)
+}
+
+export function triggerEffects(dep) {
     for (const effect of dep) {
         if (effect.scheduler) {
             effect.scheduler()
