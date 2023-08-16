@@ -10,6 +10,7 @@ class RefImpl {
     private _rawValue
     private _value
     private dep
+    public __v__is_ref = true
 
     constructor(value) {
         this._rawValue = value
@@ -18,6 +19,9 @@ class RefImpl {
     }
 
     get value() {
+        // 当 ref 变量在 effect(fn) 中被使用，effect 会 new ReactiveEffect 来收集依赖
+        // 在 ReactiveEffect 中 run 函数，会初始化 shouldTrack & activeEffect
+        
         if(isTracking()) {
             trackEffects(this.dep)
         }
@@ -26,15 +30,24 @@ class RefImpl {
 
     set value(newValue) {
         if(!hasChanged(newValue, this._rawValue)) return 
-        
+
         this._rawValue = newValue
         this._value = convert(newValue)
+        // 当 ref 变量被 set 时，查看 dep 并触发其所有依赖（ReactiveEffect.run）
         triggerEffects(this.dep)
     }
 }
 
 function convert(value) {
     return isObject(value) ? reactive(value) : value
+}
+
+export function isRef(ref) {
+    return !!ref.__v__is_ref
+}
+
+export function unRef(ref) {
+    return isRef(ref) ? ref.value : ref
 }
 
 export function ref(value) {
