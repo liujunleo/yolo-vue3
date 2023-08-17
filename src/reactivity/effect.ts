@@ -4,7 +4,7 @@ const targetMap = new Map()
 let activeEffect
 let shouldTrack
 
-class ReactiveEffect {
+export class ReactiveEffect {
     public scheduler?: Function
     private _fn: Function
     deps:any = []
@@ -80,9 +80,14 @@ export function isTracking() {
 }
 
 export function trigger(target, key) {
-    const depsMap = targetMap.get(target)
-    const dep = depsMap.get(key)
-    triggerEffects(dep)
+    // 如果 reactive 对象未使用过 effect，无需 trigger
+    if(targetMap.size > 0) {
+        const depsMap = targetMap.get(target)
+        if(depsMap && depsMap.has(key)) {
+            const dep = depsMap.get(key)
+            triggerEffects(dep)
+        }
+    }
 }
 
 export function triggerEffects(dep) {
