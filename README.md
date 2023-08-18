@@ -1,8 +1,24 @@
 ### Yolo-Vue3 打工人自己的 Vue3
 从零开始以 TDD 测试驱动开发形式，逐步实现 Vue3 中三大模块：
-- reactivity 响应式
-- runtime 运行时
-- compiler 编译
+1. reactivity 响应式
+  - [x] 实现 effect & reactive 依赖收集 & 依赖触发
+  - [x] 实现 effect 返回 runner
+  - [x] 实现 effect 返回 scheduler 功能
+  - [x] 实现 effect 的 stop 功能
+  - [x] 实现 readonly 功能
+  - [x] 实现 isReactive & isReadonly
+  - [x] 优化 stop 功能
+  - [x] 实现 reactive & readonly 嵌套对象转换功能
+  - [x] 实现 shallowReadonly 功能
+  - [x] 实现 isProxy 功能
+  - [x] 实现 ref 功能
+  - [x] 实现 isRef & unRef 功能
+  - [x] 实现 proxyRefs 功能
+  - [x] 实现 computed 计算属性功能
+     
+2. runtime 运行时
+  - [ ] 实现初始化 component 主流程
+3. compiler 编译
 
 #### 小步走实践开发
 - 渐进式小步骤开发 Vue3 中功能 & 逻辑
