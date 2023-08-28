@@ -2,7 +2,7 @@
 // 如 reactive 中一般使用 proxy 来劫持 get/set 进行依赖收集、依赖触发
 // 使用 RefImpl 将 ref(值) 包装成 object，如：{ value: 值 } ，再使用 reactive & proxy 能力 & 逻辑
 
-import { hasChanged, isObject } from "../shared"
+import { hasChanged, isObject } from "../shared/index"
 import { isTracking, trackEffects, triggerEffects } from "./effect"
 import { reactive } from "./reactive"
 
