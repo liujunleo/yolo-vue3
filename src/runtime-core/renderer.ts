@@ -1,3 +1,4 @@
+import { isObject } from "../shared/index"
 import { createComponentInstance, setupComponent } from "./component"
 
 export function render(vnode, container) {
@@ -5,15 +6,54 @@ export function render(vnode, container) {
 }
 
 function patch(vnode, container) {
-    processComponent(vnode, container)
+    if (typeof vnode.type === 'string') {
+        // 判断 vnode 类型为 string：调用 processElement
+        processElement(vnode, container)
+    } else if( isObject(vnode.type)) {
+        // 判断 vnode 类型为 object：调用 processComponent
+        processComponent(vnode, container)
+    }
+}
+
+// 处理 Element
+function processElement(vnode: any, container: any) {
+    mountElement(vnode, container)
+}
+
+// 挂载 Element
+function mountElement(vnode: any, container: any) {
+    // create dom
+    const el = document.createElement(vnode.type) as Element
+
+    // children
+    const { children } = vnode
+    if (typeof children === 'string') {
+        el.textContent = children
+    } else if(typeof children === 'object') {
+        // handle multiple childrens
+        mountChildren(vnode, el)
+    }
+
+    // props
+    const { props } = vnode
+    for (const key in props) {
+       el.setAttribute(key, props[key])
+    }
+
+    // el append to container
+    container.append(el)
+}
+
+// 挂载 children 数组，循环调用 patch
+function mountChildren(vnode, container) {
+    vnode.children.forEach(v => {
+        patch(v, container)
+    });
 }
 
 // 处理组件
 function processComponent(vnode, container) {
-    // 判断 vnode 类型：component
     mountComponent(vnode, container)
-    // TODO
-    // 判断 vnode 类型：element
 }
 
 // 挂载组件
@@ -28,3 +68,4 @@ function setupRenderEffect(instance, container) {
     const subTree = instance.render()
     patch(subTree, container)
 }
+
