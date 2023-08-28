@@ -1,4 +1,4 @@
-import { createApp } from '../../lib/yolo-vue3.esm.js'
-import { App } from './App'
+import { createApp } from '../../lib/yolo-vue.esm.js'
+import { App } from './App.js'
 
 createApp(App).mount('#app')
