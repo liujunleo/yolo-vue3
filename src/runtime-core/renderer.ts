@@ -22,8 +22,8 @@ function processElement(vnode: any, container: any) {
 
 // 挂载 Element
 function mountElement(vnode: any, container: any) {
-    // create dom
-    const el = document.createElement(vnode.type) as Element
+    // create el & save el to vnode
+    const el = (vnode.el = document.createElement(vnode.type) as Element)
 
     // children
     const { children } = vnode
@@ -57,15 +57,17 @@ function processComponent(vnode, container) {
 }
 
 // 挂载组件
-function mountComponent(vnode, container) {
-    const instance = createComponentInstance(vnode)
+function mountComponent(initialVNode, container) {
+    const instance = createComponentInstance(initialVNode)
     setupComponent(instance)
-    setupRenderEffect(instance, container)
+    setupRenderEffect(instance, initialVNode, container)
 }
 
 // 调用 render 获取虚拟节点树 subTree，继续 patch 挂载 component/element
-function setupRenderEffect(instance, container) {
-    const subTree = instance.render()
+function setupRenderEffect(instance, initialVNode, container) {
+    const { proxy } = instance
+    const subTree = instance.render.call(proxy)
     patch(subTree, container)
+    initialVNode.el = subTree.el
 }
 

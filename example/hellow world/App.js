@@ -2,22 +2,23 @@ import { h } from '../../lib/yolo-vue.esm.js'
 
 export const App = {
     render() {
-        return h(
+    window.self = this
+    return h(
             'div', 
             {
                 id: 'test'
             },
-            // `hello ${this.msg}!`
+            `Hello ${this.msg}!`
             //`hello world!`
-            [
-                h('p', {class: 'red'}, '红色'),
-                h('p', {class: 'green'}, '绿色')
-            ]
+            // [
+            //     h('p', {class: 'red'}, '红色'),
+            //     h('p', {class: 'green'}, '绿色')
+            // ]
         )
     },
     setup() {
         return {
-            msg: 'world'
+            msg: 'World'
         }
     }
 }
