@@ -17,7 +17,11 @@
   - [x] 实现 computed 计算属性功能
      
 2. runtime 运行时
-  - [ ] 实现初始化 component 主流程
+  - [x] 实现初始化 component 主流程
+  - [x] 使用 rollup 打包代码库
+  - [x] 初始化 element 主流程 (example: hello world!)
+  - [x] 实现组件代理对象 (setupState & $el)
+  - [x] 实现 ShapeFlags & 二进制位运算
 3. compiler 编译
 
 #### 小步走实践开发
