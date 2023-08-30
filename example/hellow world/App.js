@@ -8,12 +8,12 @@ export const App = {
             {
                 id: 'test'
             },
-            `Hello ${this.msg}!`
+            // `Hello ${this.msg}!`
             //`hello world!`
-            // [
-            //     h('p', {class: 'red'}, '红色'),
-            //     h('p', {class: 'green'}, '绿色')
-            // ]
+            [
+                h('p', {class: 'red'}, '红色'),
+                h('p', {class: 'green'}, '绿色')
+            ]
         )
     },
     setup() {
