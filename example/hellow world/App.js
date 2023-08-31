@@ -1,6 +1,8 @@
 import { h } from '../../lib/yolo-vue.esm.js'
+import { Foo } from './Foo.js'
 
 export const App = {
+    name: 'App',
     render() {
     window.self = this
     return h(
@@ -14,8 +16,8 @@ export const App = {
             // `Hello ${this.msg}!`
             //`hello world!`
             [
-                h('p', {class: 'red'}, '红色'),
-                h('p', {class: 'green'}, '绿色')
+                h('div',{ id: 'AppId' }, `Hello ${this.msg}!`),
+                h(Foo, { count: 1 }),
             ]
         )
     },
