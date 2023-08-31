@@ -6,7 +6,10 @@ export const App = {
     return h(
             'div', 
             {
-                id: 'test'
+                id: 'test',
+                onClick: ()=> {
+                    console.log('onClick')
+                }
             },
             // `Hello ${this.msg}!`
             //`hello world!`
