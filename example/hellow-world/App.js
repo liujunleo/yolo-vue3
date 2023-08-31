@@ -4,8 +4,8 @@ import { Foo } from './Foo.js'
 export const App = {
     name: 'App',
     render() {
-    window.self = this
-    return h(
+        window.self = this
+        return h(
             'div', 
             {
                 id: 'test',
