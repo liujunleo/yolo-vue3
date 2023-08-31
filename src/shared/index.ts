@@ -15,3 +15,5 @@ export const isOn = (key: string) => {
 export const getEventNameByKey = (key: string) => {
     return key.slice(2).toLocaleLowerCase()
 }
+
+export const hasOwn = (target, key) => Object.prototype.hasOwnProperty.call(target, key)
