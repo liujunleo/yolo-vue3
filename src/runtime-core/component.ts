@@ -2,6 +2,7 @@ import { shallowReadonly } from "../reactivity/reactive"
 import { emit } from "./componentEmit"
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandlers } from "./componentPublicInstance"
+import { initSlots } from "./componentSlots"
 
 // 创建组件实例
 export function createComponentInstance(vnode: any) {
@@ -10,6 +11,7 @@ export function createComponentInstance(vnode: any) {
         type: vnode.type,
         setupState: {},
         props: {},
+        slots: {},
         emit: () => {}
     }
     // 为 emit 绑定当前组件实例作为第一个参数 instance
@@ -20,8 +22,7 @@ export function createComponentInstance(vnode: any) {
 // 安装组件
 export function setupComponent(instance) {
     initProps(instance, instance.vnode.props)
-    // TODO initSlots
-    // 为 instance 挂载 setupState、render 函数
+    initSlots(instance, instance.vnode.children)
     setupStatufulComponent(instance)
 }
 
@@ -55,3 +56,4 @@ export function finishComponentSetup(instance: any) {
     const component = instance.type
     instance.render = component.render
 }
+
