@@ -1,6 +1,7 @@
 import { ShapeFlags } from "../shared/ShapeFlags"
 
 export function initSlots(instance: any, children: any) {
+
     const { vnode } = instance
     // vnode.shapeFlag 标记为 SLOT_CHILDREN 时，才执行绑定 slots 逻辑
     if( vnode.shapeFlag & ShapeFlags.SLOT_CHILDREN) {
