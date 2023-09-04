@@ -1,20 +1,45 @@
 import { ShapeFlags } from "../shared/ShapeFlags"
 import { getEventNameByKey, isObject, isOn } from "../shared/index"
 import { createComponentInstance, setupComponent } from "./component"
+import { Fragment, Text } from "./vnode"
 
 export function render(vnode, container) {
     patch(vnode, container)
 }
 
+// 判断 vnode 类型，区分处理
 function patch(vnode, container) {
-    const { shapeFlag } = vnode
-    if (shapeFlag & ShapeFlags.ELEMENT) {
-        // 判断 vnode 类型为 ELEMENT：调用 processElement
-        processElement(vnode, container)
-    } else if(shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-        // 判断 vnode 类型为 STATEFUL_COMPONENT：调用 processComponent
-        processComponent(vnode, container)
+    const { type, shapeFlag } = vnode
+    switch (type) {
+        case Fragment:
+            processFragment(vnode, container)
+            break;
+        case Text:
+            processText(vnode, container)
+            break;
+        default:
+            if (shapeFlag & ShapeFlags.ELEMENT) {
+                // 判断 vnode 类型为 ELEMENT：调用 processElement
+                processElement(vnode, container)
+            } else if(shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+                // 判断 vnode 类型为 STATEFUL_COMPONENT：调用 processComponent
+                processComponent(vnode, container)
+            }
+            break;
     }
+  
+}
+
+// 处理 Fragment
+function processFragment(vnode: any, container: any) {
+    mountChildren(vnode, container)
+}
+
+// 处理 Text
+function processText(vnode: any, container: any) {
+    const { children } = vnode
+    const el = vnode.el = document.createTextNode(children)
+    container.append(el)
 }
 
 // 处理 Element

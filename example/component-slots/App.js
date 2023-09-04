@@ -1,4 +1,4 @@
-import { h } from '../../lib/yolo-vue.esm.js'
+import { h, createTextVNode } from '../../lib/yolo-vue.esm.js'
 import { Foo } from './Foo.js'
 
 export const App = {
@@ -9,7 +9,8 @@ export const App = {
             header: ({row, title}) => 
                 [
                     h('p', {}, 'fooSlot - header'), 
-                    h('p', {}, `fooSlot - header - scoped: ${row.age} ${title}`)
+                    h('p', {}, `fooSlot - header - scoped: ${row.age} ${title}`),
+                    createTextVNode('文本节点内容')
                 ],
             footer: () => h('p', {}, 'fooSlot - footer')
         }
