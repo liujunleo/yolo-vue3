@@ -5,13 +5,15 @@ import { publicInstanceProxyHandlers } from "./componentPublicInstance"
 import { initSlots } from "./componentSlots"
 
 // 创建组件实例
-export function createComponentInstance(vnode: any) {
+export function createComponentInstance(vnode: any, parent) {
     const component = {
         vnode,
         type: vnode.type,
         setupState: {},
         props: {},
         slots: {},
+        provides: parent ? parent.provides : {},
+        parent,
         emit: () => {}
     }
     // 为 emit 绑定当前组件实例作为第一个参数 instance
