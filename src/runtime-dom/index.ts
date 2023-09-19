@@ -5,11 +5,15 @@ function createElement(type) {
    return document.createElement(type)
 }
 
-function patchProp(el, key, value) {
-if (isOn(key)) {
-        el.addEventListener(getEventNameByKey(key), value)
+function patchProp(el, key, prevVal, nextVal) {
+    if (isOn(key)) {
+        el.addEventListener(getEventNameByKey(key), nextVal)
     } else {
-        el.setAttribute(key, value)
+        if(nextVal === undefined || nextVal === null) {
+            el.removeAttribute(key)
+        } else {
+        el.setAttribute(key, nextVal)
+        }
     }
 }
 
