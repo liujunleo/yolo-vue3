@@ -8,17 +8,39 @@ export const App = {
             count.value++
             console.log(count.value)
         }
+
+        // update props
+        let props = ref({ foo: 'foo', bar: 'bar' })
+        const changeProp1 = () => {
+            props.value.foo = 'foo-new'
+        }
+        const changeProp2 = () => {
+            props.value.foo = null
+        }
+        const changeProp3 = () => {
+            props.value = {
+                foo: 'foo-only'
+            }
+        }
         return {
             count,
-            countClick
+            countClick,
+            changeProp1,
+            changeProp2,
+            changeProp3,
+            props
         }
     },
     render() {
         return h(
-            'div', {},
+            'div', { ...this.props },
             [
                 h('p', {}, `count: ${this.count}`),
-                h('button', { onClick: this.countClick }, 'count++')
+                h('button', { onClick: this.countClick }, 'count++'),
+                h('br'),
+                h('button', { onClick: this.changeProp1}, 'changeProp1 - foo-new'),
+                h('button', { onClick: this.changeProp2}, 'changeProp2 - foo-null'),
+                h('button', { onClick: this.changeProp3}, 'changeProp3 - foo-only')
             ]
         )
     }

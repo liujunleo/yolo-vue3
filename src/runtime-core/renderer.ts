@@ -1,11 +1,12 @@
 import { effect } from "../reactivity/effect"
+import { EMPTY_OBJ } from "../shared"
 import { ShapeFlags } from "../shared/ShapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
 import { createAppApi } from "./createApp"
 import { Fragment, Text } from "./vnode"
 
 export function createRenderer(options) {
-    const { createElement, patchProp, insert } = options
+    const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = options
 
     // 开启渲染
     function render(vnode, container) {
@@ -61,15 +62,44 @@ export function createRenderer(options) {
         console.log('update patchElement')
         console.log('n1', n1)
         console.log('n2', n2)
+ 
+        const oldProps = n1.props || EMPTY_OBJ
+        const newProps = n2.props || EMPTY_OBJ
+        const el = n2.el = n1.el
 
         // 对比 props
+        patchProps(el, oldProps, newProps)
+
         // 对比 children
+    }
+
+    // 对比新老节点 props 差异
+    function patchProps(el, oldProps, newProps) {
+        if(oldProps !== newProps) {
+            // newProp与oldProp不一致时，设置newProp值（修改、新增）
+            for(const key in newProps) {
+                const prevProp = oldProps[key]
+                const nextProp = newProps[key]
+                if(prevProp !== nextProp) {
+                    hostPatchProp(el, key, prevProp, nextProp)
+                }
+            }
+
+            if(oldProps !== EMPTY_OBJ) {
+                // oldProps中key不在newProps时，删除el中对应key属性
+                for(const key in oldProps) {
+                    if(!(key in newProps)) {
+                        hostPatchProp(el, key, oldProps[key], null)
+                    }
+                }
+            }
+        }
     }
 
     // 挂载 Element
     function mountElement(vnode: any, container: any, parentComponent) {
         // create el & save el to vnode
-        const el = (vnode.el = createElement(vnode.type) as Element)
+        const el = (vnode.el = hostCreateElement(vnode.type) as Element)
 
         // children
         const { children, shapeFlag } = vnode
@@ -84,11 +114,11 @@ export function createRenderer(options) {
         const { props } = vnode
         for (const key in props) {
             const val = props[key]
-            patchProp(el, key, val)
+            hostPatchProp(el, key, null, val)
         }
 
         // el append to container
-        insert(el, container)
+        hostInsert(el, container)
     }
 
     // 挂载 children 数组，循环调用 patch
