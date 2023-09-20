@@ -6,7 +6,13 @@ import { createAppApi } from "./createApp"
 import { Fragment, Text } from "./vnode"
 
 export function createRenderer(options) {
-    const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = options
+    const { 
+        createElement: hostCreateElement,
+        patchProp: hostPatchProp,
+        insert: hostInsert,
+        remove: hostRemove,
+        setElementText: hostSetElementText
+    } = options
 
     // 开启渲染
     function render(vnode, container) {
@@ -39,7 +45,7 @@ export function createRenderer(options) {
 
     // 处理 Fragment
     function processFragment(n1: any, n2: any, container: any, parentComponent) {
-        mountChildren(n2, container, parentComponent)
+        mountChildren(n2.children, container, parentComponent)
     }
 
     // 处理 Text
@@ -54,11 +60,11 @@ export function createRenderer(options) {
         if(!n1) {
             mountElement(n2, container, parentComponent)
         } else {
-            patchElement(n1, n2, container)
+            patchElement(n1, n2, container, parentComponent)
         }
     }
 
-    function patchElement(n1, n2, container) {
+    function patchElement(n1, n2, container, parentComponent) {
         console.log('update patchElement')
         console.log('n1', n1)
         console.log('n2', n2)
@@ -67,10 +73,50 @@ export function createRenderer(options) {
         const newProps = n2.props || EMPTY_OBJ
         const el = n2.el = n1.el
 
+        // 对比 children
+        patchChildren(n1, n2, el, parentComponent)
+
         // 对比 props
         patchProps(el, oldProps, newProps)
+    }
 
-        // 对比 children
+    // 对比新老节点 children 差异
+    function patchChildren(n1, n2, container, parentComponent) {
+        const prevShapeFlag = n1.shapeFlag
+        const nextShapeFlag = n2.shapeFlag
+        const c1 = n1.children
+        const c2 = n2.children
+        // array/text to text
+        if(nextShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+            // array to text
+            if(prevShapeFlag & ShapeFlags.ARRAY_CHILREN) {
+                // 删除原来的 array children
+                unmountChildren(n1.children)
+            }
+            // text to text
+            if(c1 !== c2) {
+                hostSetElementText(container, c2)
+            }
+        }
+        else {
+            // array/text to array
+
+            // text to array
+            if(prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+                hostSetElementText(container, '')
+                mountChildren(c2, container, parentComponent)
+            } else {
+                // array to array
+                mountChildren(c2, container, parentComponent)
+            }
+        }
+    }
+
+    function unmountChildren(children) {
+        for (let i = 0; i < children.length; i++) {
+            const el = children[i].el
+            hostRemove(el)
+        }
     }
 
     // 对比新老节点 props 差异
@@ -107,7 +153,7 @@ export function createRenderer(options) {
             el.textContent = children
         } else if(shapeFlag & ShapeFlags.ARRAY_CHILREN) {
             // handle multiple childrens
-            mountChildren(vnode, el, parentComponent)
+            mountChildren(vnode.children, el, parentComponent)
         }
 
         // props
@@ -122,8 +168,8 @@ export function createRenderer(options) {
     }
 
     // 挂载 children 数组，循环调用 patch
-    function mountChildren(vnode, container, parentComponent) {
-        vnode.children.forEach(v => {
+    function mountChildren(children, container, parentComponent) {
+        children.forEach(v => {
             patch(null, v, container, parentComponent)
         });
     }
