@@ -20,8 +20,8 @@ function patchProp(el, key, prevVal, nextVal) {
 }
 
 // 插入元素
-function insert(el, parent) {
-    parent.append(el)
+function insert(el, parent, anchor) {
+    parent.insertBefore(el, anchor || null)
 }
 
 // 移除元素
